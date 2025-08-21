@@ -33,7 +33,7 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
-	"anyads.online/sdk-go" // Используйте ваш реальный путь к модулю
+	"github.com/maomedia/AnyAds-SDK-GoLang" // Используйте ваш реальный путь к модулю
 )
 
 // handleAdTask - это ваша функция-обработчик для рекламных задач.
@@ -44,12 +44,31 @@ func handleAdTask(task anyads.AdTask) {
 	fmt.Printf("    Campaign ID: %s\n", task.CampaignID)
 
     content := task.Creative.Content
+
+    // Проверяем, есть ли что отправлять
+    if content.Text == "" && len(content.Files) == 0 {
+        fmt.Println("    Ошибка: креатив пуст. Задача проигнорирована.")
+        return
+    }
+
     if content.Text != "" {
         fmt.Printf("    Текст креатива: %s\n", content.Text)
     }
-	// TODO: Здесь будет ваша логика рассылки по базе пользователей.
-	fmt.Println("-------------------------------------------")
-}
+    if len(content.Files) > 0 {
+        fmt.Printf("    URL картинки: %s\n", content.Files[0])
+    }
+    if len(content.Buttons) > 0 {
+        fmt.Println("    Креатив содержит кнопки.")
+    }
+
+    // !!! ВАЖНО: Здесь будет ваша логика рассылки по базе пользователей
+    // с использованием вашей любимой библиотеки для Telegram (например, go-telegram-bot-api).
+    // Пример:
+    // userIDs := GetAllUsersFromDB()
+    // for _, userID := range userIDs {
+    //     // ... код отправки сообщения ...
+    //     time.Sleep(50 * time.Millisecond) // Пауза для обхода лимитов
+    // }
 
 func main() {
 	apiKey := os.Getenv("ANYADS_API_KEY")
